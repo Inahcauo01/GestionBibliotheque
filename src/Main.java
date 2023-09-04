@@ -1,3 +1,4 @@
+import java.util.List;
 import java.util.Scanner;
 
 public class Main {
@@ -37,26 +38,27 @@ public class Main {
             case 1:
                 Scanner scanner = new Scanner(System.in);
 
-                System.out.println("Entrez l'ID du livre : ");
-                int id = scanner.nextInt();
+                System.out.println("Entrez l'ID du livre : ");              int id = scanner.nextInt();
                 scanner.nextLine(); // Pour consommer la nouvelle ligne restante
 
-                System.out.println("Entrez l'ISBN du livre : ");
-                String isbn = scanner.nextLine();
-
-                System.out.println("Entrez le titre du livre : ");
-                String titre = scanner.nextLine();
-
-                System.out.println("Entrez l'auteur du livre : ");
-                String auteur = scanner.nextLine();
-
-                System.out.println("Entrez la quantité du livre : ");
-                int quantite = scanner.nextInt();
+                System.out.println("Entrez l'ISBN du livre : ");            String isbn   = scanner.nextLine();
+                System.out.println("Entrez le titre du livre : ");          String titre  = scanner.nextLine();
+                System.out.println("Entrez l'auteur du livre : ");          String auteur = scanner.nextLine();
+                System.out.println("Entrez la quantité du livre : ");       int quantite  = scanner.nextInt();
 
                 Livre livre = new Livre(id, isbn, titre, auteur, quantite);
                 bibliothecaire.ajouterLivre(livre);
                 break;
             case 2:
+                List<Livre> livres = bibliothecaire.afficherLivres();
+                for (Livre lv : livres) {
+                    System.out.println("ID      : " + lv.getId());
+                    System.out.println("ISBN    : " + lv.getIsbn());
+                    System.out.println("Title   : " + lv.getTitle());
+                    System.out.println("Auteur  : " + lv.getAuteur());
+                    System.out.println("Quantité: " + lv.getQuantite());
+                    System.out.println("_______________________________");
+                }
                 break;
             case 4:
                 break;
