@@ -47,14 +47,14 @@ public class Main {
                 System.out.println("__________________________________________");
                 System.out.println("############ Ajouter un Livre ############");
                 System.out.println("------------------------------------------");
-                System.out.println("Entrez l'ID du livre : ");              int id = scanner.nextInt();
-                scanner.nextLine();
+                //System.out.println("Entrez l'ID du livre : ");              int id = scanner.nextInt();
+                //scanner.nextLine();
                 System.out.println("Entrez l'ISBN du livre : ");            String isbn   = scanner.nextLine();
                 System.out.println("Entrez le titre du livre : ");          String titre  = scanner.nextLine();
                 System.out.println("Entrez l'auteur du livre : ");          String auteur = scanner.nextLine();
                 System.out.println("Entrez la quantité du livre : ");       int quantite  = scanner.nextInt();
 
-                Livre livre = new Livre(id, isbn, titre, auteur, quantite);
+                Livre livre = new Livre(isbn, titre, auteur, quantite);
                 bibliothecaire.ajouterLivre(livre);
                 break;
             case 2:
@@ -63,7 +63,7 @@ public class Main {
                 System.out.println("######### Afficher les livres ########");
                 System.out.println("--------------------------------------");
                 for (Livre lv : livres) {
-                    System.out.println("\tID      : " + lv.getId());
+                    //System.out.println("\tID      : " + lv.getId());
                     System.out.println("\tISBN    : " + lv.getIsbn());
                     System.out.println("\tTitle   : " + lv.getTitle());
                     System.out.println("\tAuteur  : " + lv.getAuteur());
@@ -74,19 +74,33 @@ public class Main {
                     return true; // Quitter le programme
                 }
                 break;
+            case 3:
+                Scanner scann = new Scanner(System.in);
+                System.out.print("Recherer un livre par son titre ou son auteur : ");
+                String mot = scann.nextLine();
+                List<Livre> livres_recherches = bibliothecaire.rechercherLivre(mot);
+                System.out.println("______________________________________");
+                for (Livre lr: livres_recherches){
+                    System.out.println("\tISBN    : " + lr.getIsbn());
+                    System.out.println("\tTitle   : " + lr.getTitle());
+                    System.out.println("\tAuteur  : " + lr.getAuteur());
+                    System.out.println("\tQuantité: " + lr.getQuantite());
+                    System.out.println("________________________________");
+                }
+                break;
             case 4:
                 break;
             case 5:
                 break;
             case 6:
                 while (true) {
-                    Scanner scann = new Scanner(System.in);
+                    Scanner scan = new Scanner(System.in);
                     System.out.print("Entrez l'ISBN du livre que vous souhaitez supprimer : ");
-                    String isbnToDelete = scann.nextLine();
+                    String isbnToDelete = scan.nextLine();
                     //bibliothecaire.suppTousLivres(isbnToDelete);
                     bibliothecaire.suppLivre(isbnToDelete);
                     System.out.print("Voulez-vous supprimer un autre livre ? (O/N): ");
-                    String userInput = scann.nextLine();
+                    String userInput = scan.nextLine();
                     if (!"O".equalsIgnoreCase(userInput)) {
                         break;
                     }

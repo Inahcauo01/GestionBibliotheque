@@ -25,9 +25,7 @@ public class Login {
                 rs = ps.executeQuery();
 
                 // Vérifier si rs n'est pas vide
-                if (rs.next()) {
-                    //System.out.println("Menu doit être affiché ici");
-                    // Authentification réussie
+                if (rs.next()) {        // Authentification réussie
                     authentified = true;
                     break;
                 } else {

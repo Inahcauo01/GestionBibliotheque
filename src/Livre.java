@@ -5,8 +5,8 @@ public class Livre {
     private String auteur;
     private int quantite;
 
-    public Livre(int id, String isbn, String title, String auteur, int quantite) {
-        this.id = id;
+    public Livre(String isbn, String title, String auteur, int quantite) {
+        //this.id = id;
         this.isbn = isbn;
         this.title = title;
         this.auteur = auteur;

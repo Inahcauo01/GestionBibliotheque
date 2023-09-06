@@ -5,9 +5,6 @@ import java.util.Scanner;
 
 public class Bibliothecaire{
 
-    public void ajouterLivre(){
-
-    }
     public void ajouterLivre(Livre livre) {
         Connection connection = ConnectionDB.getConnection();
 
@@ -54,7 +51,7 @@ public class Bibliothecaire{
                 String auteur = rs.getString("auteur");
                 int quantite  = rs.getInt("quantite");
 
-                Livre livre = new Livre(id, isbn, title, auteur, quantite);
+                Livre livre = new Livre(isbn, title, auteur, quantite);
                 livres.add(livre);
             }
         }catch (Exception e){
@@ -100,7 +97,7 @@ public class Bibliothecaire{
                 int nb_livre = ps.executeUpdate();
 
                 if (nb_livre > 0) {
-                    System.out.println(nb_livre + " livres ont supprimé avec succes");
+                    System.out.println(quantity + " livres ont supprimé avec succes");
                 } else {
                     System.out.println("Aucun livre trouvé !");
                 }
@@ -108,5 +105,36 @@ public class Bibliothecaire{
                 System.out.println("La connexion à la base de données a échoué !");
             }
         }
+    }
+
+    public List<Livre> rechercherLivre(String mot){
+        List<Livre> livres = new ArrayList<>();
+        PreparedStatement ps;
+        ResultSet rs;
+        String query = "SELECT * FROM livres WHERE title LIKE ? OR auteur LIKE ?";
+
+        try {
+            ps = ConnectionDB.getConnection().prepareStatement(query);
+            ps.setString(1, "%"+ mot +"%");
+            ps.setString(2, "%"+ mot +"%");
+
+            rs = ps.executeQuery();
+            while (rs.next()){
+                int id        = rs.getInt("id");
+                String isbn   = rs.getString("isbn");
+                String title  = rs.getString("title");
+                String auteur = rs.getString("auteur");
+                int quantite  = rs.getInt("quantite");
+
+                Livre l = new Livre(isbn, title, auteur, quantite);
+                livres.add(l);
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Erreur lors de la connexion à la base de données !");
+            e.printStackTrace();
+        }
+
+        return  livres;
     }
 }
