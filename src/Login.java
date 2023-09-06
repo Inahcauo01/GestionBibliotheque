@@ -3,7 +3,7 @@ import java.util.Scanner;
 
 public class Login {
     public boolean authentier() {
-        System.out.println("welcome back");
+        System.out.println("Welcome back");
         Scanner sc = new Scanner(System.in);
 
         boolean authentified = false;
