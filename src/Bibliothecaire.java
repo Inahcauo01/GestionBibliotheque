@@ -230,6 +230,9 @@ public class Bibliothecaire{
         System.out.println("Titre : " + livre.getTitle());
         System.out.println("Auteur : " + livre.getAuteur());
         System.out.println("Quantité : " + livre.getQuantite());
+        System.out.printf("%-15s | %-30s | %-30s | %-6s%n", "ISBN", "Titre", "Auteur", "Quantité");
+        System.out.println("----------------------------------------------------------------------------------------------------------------------");
+        System.out.printf("%-15s | %-30s | %-30s | %-6d%n", livre.getIsbn(), livre.getTitle(), livre.getAuteur(), livre.getQuantite());
     }
 
     private void modifierBD(Livre livre) {
@@ -254,4 +257,5 @@ public class Bibliothecaire{
             e.printStackTrace();
         }
     }
+
 }

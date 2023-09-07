@@ -62,16 +62,11 @@ public class Main {
             // ########## Afficher les livres ##########
             case 2:
                 List<Livre> livres = bibliothecaire.afficherLivres();
-                System.out.println("______________________________________");
-                System.out.println("######### Afficher les livres ########");
-                System.out.println("--------------------------------------");
+                System.out.printf("\t%-15s | %-30s | %-30s | %-6s%n", "ISBN", "Titre", "Auteur", "Quantité");
+                System.out.println("\t----------------------------------------------------------------------------------------------------");
                 for (Livre lv : livres) {
-                    //System.out.println("\tID      : " + lv.getId());
-                    System.out.println("\tISBN    : " + lv.getIsbn());
-                    System.out.println("\tTitle   : " + lv.getTitle());
-                    System.out.println("\tAuteur  : " + lv.getAuteur());
-                    System.out.println("\tQuantité: " + lv.getQuantite());
-                    System.out.println("________________________________");
+                    System.out.printf("\t%-15s | %-30s | %-30s | %-6d%n", lv.getIsbn(), lv.getTitle(), lv.getAuteur(), lv.getQuantite());
+
                 }
                 if (retourMenu()) {
                     return true; // Quitter le programme
