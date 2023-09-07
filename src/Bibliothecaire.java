@@ -74,7 +74,7 @@ public class Bibliothecaire{
                 System.out.println("Aucun livre trouvé !");
             }
         } catch (Exception e) {
-            System.out.println("La connexion à la base de données a échoué !");
+            System.out.println("Erreur lors de la suppression !");
         }
     }
 
@@ -102,7 +102,7 @@ public class Bibliothecaire{
                     System.out.println("Aucun livre trouvé !");
                 }
             } catch (Exception e) {
-                System.out.println("La connexion à la base de données a échoué !");
+                System.out.println("Erreur lors de la suppression !");
             }
         }
     }
@@ -130,11 +130,128 @@ public class Bibliothecaire{
                 livres.add(l);
             }
 
+            if (livres.isEmpty()) {
+                System.out.println("Aucun livre trouvé pour la recherche : " + mot);
+            }
         } catch (SQLException e) {
-            System.out.println("Erreur lors de la connexion à la base de données !");
+            System.out.println("Erreur lors de la recherche !");
             e.printStackTrace();
         }
-
         return  livres;
+    }
+
+    public Livre modifierLivre(String isbnRecherche){
+        Livre livre = recupererLivreIsbn(isbnRecherche);
+        afficherUnLivre(livre);
+        Scanner scanner = new Scanner(System.in);
+        int choix;
+
+        do {
+            System.out.println("Que souhaitez vous modifier ?");
+            System.out.println("1. Titre");
+            System.out.println("2. Auteur");
+            System.out.println("3. Titre et Auteur");
+            System.out.println("4. Quantité");
+            System.out.println("0. Annuler");
+
+            choix = scanner.nextInt();
+            scanner.nextLine();
+
+            switch (choix) {
+                case 1:
+                    System.out.println("Entrez le nouveau titre : ");   String newTitle = scanner.nextLine();
+                    livre.setTitle(newTitle);
+                    modifierBD(livre);
+                    break;
+                case 2:
+                    System.out.println("Entrez le nouvel auteur : ");   String newAuthor = scanner.nextLine();
+                    livre.setAuteur(newAuthor);
+                    System.out.println("Livre après la modification :");
+                    afficherUnLivre(livre);
+                    modifierBD(livre);
+                    break;
+                case 3:
+                    System.out.println("Entrez le nouveau titre : ");   newTitle = scanner.nextLine();
+                    System.out.println("Entrez le nouvel auteur : ");   String newAuthor2 = scanner.nextLine();
+                    livre.setTitle(newTitle);
+                    livre.setAuteur(newAuthor2);
+                    modifierBD(livre);
+                    break;
+                case 4:
+                    System.out.println("Entrez la nouvelle quantité : ");
+                    int newQuantity = scanner.nextInt();
+                    livre.setQuantite(newQuantity);
+                    modifierBD(livre);
+                    break;
+                case 0:
+                    System.out.println("Modification annulée.");
+                    break;
+                default:
+                    System.out.println("Choix invalide. Réessayez.");
+            }
+        } while (choix != 0);
+
+        System.out.println("Livre après la modification :");
+        afficherUnLivre(livre);
+
+        return livre;
+    }
+
+    public Livre recupererLivreIsbn(String isbnRecherche){
+        Livre livre = null;
+        PreparedStatement ps;
+        ResultSet rs;
+        String query = "SELECT * FROM livres WHERE isbn = ?";
+
+        try {
+            ps = ConnectionDB.getConnection().prepareStatement(query);
+            ps.setString(1, isbnRecherche);
+
+            rs = ps.executeQuery();
+
+            if (rs.next()) {
+                String isbn   = rs.getString("isbn");
+                String title  = rs.getString("title");
+                String auteur = rs.getString("auteur");
+                int quantite  = rs.getInt("quantite");
+
+                livre = new Livre(isbn, title, auteur, quantite);
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Erreur lors de la récupération du livre par ID !");
+            e.printStackTrace();
+        }
+        return livre;
+    }
+
+    public void afficherUnLivre(Livre livre) {
+        System.out.println("ISBN : " + livre.getIsbn());
+        System.out.println("Titre : " + livre.getTitle());
+        System.out.println("Auteur : " + livre.getAuteur());
+        System.out.println("Quantité : " + livre.getQuantite());
+    }
+
+    private void modifierBD(Livre livre) {
+        PreparedStatement ps;
+        String query = "UPDATE livres SET title = ?, auteur = ?, quantite = ? WHERE isbn = ?";
+        try {
+            ps = ConnectionDB.getConnection().prepareStatement(query);
+            ps.setString(1, livre.getTitle());
+            ps.setString(2, livre.getAuteur());
+            ps.setInt(3, livre.getQuantite());
+            ps.setString(4, livre.getIsbn());
+
+            int nbRows = ps.executeUpdate();
+
+            if (nbRows > 0) {
+                System.out.println("Livre mis à jour dans la BD.");
+            } else {
+                System.out.println("Aucun livre mis à jour dans la BD.");
+            }
+        } catch (SQLException e) {
+            System.out.println("Erreur lors de la mise à jour du livre dans la base de données !");
+            e.printStackTrace();
+        }
     }
 }

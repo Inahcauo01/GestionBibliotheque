@@ -42,6 +42,7 @@ public class Main {
         Bibliothecaire bibliothecaire = new Bibliothecaire();
         // Traitez les choix de menu ici en utilisant des instructions conditionnelles
         switch (choice) {
+            // ########## Ajouter un livre ##########
             case 1:
                 Scanner scanner = new Scanner(System.in);
                 System.out.println("__________________________________________");
@@ -57,6 +58,8 @@ public class Main {
                 Livre livre = new Livre(isbn, titre, auteur, quantite);
                 bibliothecaire.ajouterLivre(livre);
                 break;
+
+            // ########## Afficher les livres ##########
             case 2:
                 List<Livre> livres = bibliothecaire.afficherLivres();
                 System.out.println("______________________________________");
@@ -74,30 +77,42 @@ public class Main {
                     return true; // Quitter le programme
                 }
                 break;
+
+            // ########## Recherecher un livre ##########
             case 3:
                 Scanner scann = new Scanner(System.in);
-                System.out.print("Recherer un livre par son titre ou son auteur : ");
+                System.out.print("Rechercher un livre par son titre ou son auteur : ");
                 String mot = scann.nextLine();
                 List<Livre> livres_recherches = bibliothecaire.rechercherLivre(mot);
                 System.out.println("______________________________________");
                 for (Livre lr: livres_recherches){
                     System.out.println("\tISBN    : " + lr.getIsbn());
-                    System.out.println("\tTitle   : " + lr.getTitle());
+                    System.out.println("\tTitre   : " + lr.getTitle());
                     System.out.println("\tAuteur  : " + lr.getAuteur());
                     System.out.println("\tQuantité: " + lr.getQuantite());
                     System.out.println("________________________________");
                 }
+                if (retourMenu()) {
+                    return true; // Quitter le programme
+                }
                 break;
+
+            // ########### Emprunter un livre ###########
             case 4:
                 break;
             case 5:
                 break;
+
+            // ########## Supprimer un livre ##########
             case 6:
                 while (true) {
                     Scanner scan = new Scanner(System.in);
-                    System.out.print("Entrez l'ISBN du livre que vous souhaitez supprimer : ");
-                    String isbnToDelete = scan.nextLine();
-                    //bibliothecaire.suppTousLivres(isbnToDelete);
+                    String isbnToDelete;
+                    do {
+                        System.out.print("Entrez l'ISBN du livre que vous souhaitez supprimer : ");
+                        isbnToDelete = scan.nextLine();
+                    }while (bibliothecaire.recupererLivreIsbn(isbnToDelete) == null);
+
                     bibliothecaire.suppLivre(isbnToDelete);
                     System.out.print("Voulez-vous supprimer un autre livre ? (O/N): ");
                     String userInput = scan.nextLine();
@@ -106,10 +121,24 @@ public class Main {
                     }
                 }
                 break;
+
+            // ########## Modifier un livre ##########
             case 7:
+                Scanner scan = new Scanner(System.in);
+                String isbnModif;
+                do {
+                    System.out.print("Entrez l'ISBN du livre que vous souhaitez modifier : ");
+                    isbnModif = scan.nextLine();
+                }while (bibliothecaire.recupererLivreIsbn(isbnModif) == null);
+
+                bibliothecaire.modifierLivre(isbnModif);
                 break;
+
+            // ########## Générer un rapport ##########
             case 8:
                 break;
+
+            // ############### Quitter #################
             case 9:
                 System.out.println("Deconnection ...");
                 return true;
