@@ -259,47 +259,66 @@ public class Bibliothecaire{
     }
 
     public void emprunterLivre(String isbn, int nMembre, String nomEmprunteur){
-        PreparedStatement ps, psInsert, psUpdate, psInsertEmp;
-        ResultSet rs;
-        String querySelect = "SELECT * FROM livres WHERE isbn = ? AND quantite > 0";
+        PreparedStatement ps, psInsert, psUpdate, psInsertEmp, psMmLivre;
+        ResultSet rs, rsMmLivre;
 
         try{
+            String querySelect = "SELECT * FROM livres WHERE isbn = ? AND quantite > 0";
             ps = ConnectionDB.getConnection().prepareStatement(querySelect);
             ps.setString(1, isbn);
             rs = ps.executeQuery();
 
             if (rs.next()){ //le livre est disponible
-            //inserer les infos de l'emprunteur
-                String queryInsEmp = "INSERT INTO emprunteurs (numero_membre, name) VALUES(?, ?)";
-                psInsertEmp        = ConnectionDB.getConnection().prepareStatement(queryInsEmp);
-                psInsertEmp.setInt(1, nMembre);
-                psInsertEmp.setString(2, nomEmprunteur);
 
+            //verifier si l'utilisateur a deja emprunté le meme livre
+                String query = "SELECT * FROM emprunts WHERE isbn_livre = ? AND id_emprunteur = ? AND status = 'emprunte' AND date_retour_prevue > CURRENT_DATE";
+                psMmLivre    = ConnectionDB.getConnection().prepareStatement(query);
+                psMmLivre.setString(1, isbn);
+                psMmLivre.setInt(2, nMembre);
+                rsMmLivre    = psMmLivre.executeQuery();
 
-            //inserer les infos d'emprunt
-                LocalDate datePrevue = LocalDate.now().plusDays(7);
-                String queryInsert = "INSERT INTO emprunts (id_emprunteur, isbn_livre, status, date_retour_prevue) VALUES (?, ?, 'emprunte', ?)";
-                psInsert           = ConnectionDB.getConnection().prepareStatement(queryInsert);
-                psInsert.setInt(1, nMembre);
-                psInsert.setString(2, isbn);
-                psInsert.setDate(3, Date.valueOf(datePrevue));
+                if (!rsMmLivre.next()){
+                    //lutilisateur ne doit pas emprunter deux livres dans la mm duree
 
+                    //inserer les infos de l'emprunteur
+                    String queryInsEmp = "INSERT INTO emprunteurs (numero_membre, name) VALUES(?, ?)";
+                    psInsertEmp        = ConnectionDB.getConnection().prepareStatement(queryInsEmp);
+                    psInsertEmp.setInt(1, nMembre);
+                    psInsertEmp.setString(2, nomEmprunteur);
 
-            //modifier la quantité des livres
-                String queryUpdate = "UPDATE livres SET quantite = (quantite-1) WHERE isbn = ?";
-                psUpdate           = ConnectionDB.getConnection().prepareStatement(queryUpdate);
-                psUpdate.setString(1, isbn);
+                    //inserer les infos d'emprunt
+                    LocalDate datePrevue = LocalDate.now().plusDays(7);
+                    String queryInsert   = "INSERT INTO emprunts (id_emprunteur, isbn_livre, status, date_retour_prevue) VALUES (?, ?, 'emprunte', ?)";
+                    psInsert             = ConnectionDB.getConnection().prepareStatement(queryInsert);
+                    psInsert.setInt(1, nMembre);
+                    psInsert.setString(2, isbn);
+                    psInsert.setDate(3, Date.valueOf(datePrevue));
 
-                psInsertEmp.executeUpdate();
-                psInsert.executeUpdate();
-                psUpdate.executeUpdate();
+                    //modifier la quantité des livres
+                    String queryUpdate = "UPDATE livres SET quantite = (quantite-1) WHERE isbn = ?";
+                    psUpdate           = ConnectionDB.getConnection().prepareStatement(queryUpdate);
+                    psUpdate.setString(1, isbn);
 
-                System.out.println("Livre emprunté avec succès !");
+                    psInsertEmp.executeUpdate();
+                    psInsert.executeUpdate();
+                    psUpdate.executeUpdate();
+
+                    System.out.println("Livre emprunté avec succès !");
+                }
+                else{
+                    System.out.println("Vous avez déja emprunté ce livre dans cette date");
+                }
             }
         }
         catch (Exception e){
             System.out.println("Erreur dans la methode d'emprunter "+e);
         }
+    }
+
+    public void retournerLivre(){
+        //supp emprunteur
+        //update quantité (+1)
+        //
 
     }
 
