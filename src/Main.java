@@ -66,7 +66,6 @@ public class Main {
                 System.out.println("\t----------------------------------------------------------------------------------------------------");
                 for (Livre lv : livres) {
                     System.out.printf("\t%-15s | %-30s | %-30s | %-6d%n", lv.getIsbn(), lv.getTitle(), lv.getAuteur(), lv.getQuantite());
-
                 }
                 if (retourMenu()) {
                     return true; // Quitter le programme
@@ -94,7 +93,27 @@ public class Main {
 
             // ########### Emprunter un livre ###########
             case 4:
+                Scanner scn = new Scanner(System.in);
+                String isbnEmprunte;
+                do {
+                    System.out.print("Entrez l'ISBN du livre que vous souhaitez emprunter : ");
+                    isbnEmprunte = scn.nextLine();
+                }while (bibliothecaire.recupererLivreIsbn(isbnEmprunte) == null);
+
+
+                System.out.print("Entrez le numéro de membre : ");
+                int numeroMembre = scn.nextInt();
+                scn.nextLine(); // Pour consommer la nouvelle ligne après le numéro
+
+                System.out.print("Entrez le nom de l'emprunteur : ");
+                String nomEmprunteur = scn.nextLine();
+                bibliothecaire.emprunterLivre(isbnEmprunte, numeroMembre, nomEmprunteur);
+
+                if (retourMenu()) {
+                    return true; // Quitter le programme
+                }
                 break;
+
             case 5:
                 break;
 

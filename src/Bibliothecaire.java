@@ -159,27 +159,26 @@ public class Bibliothecaire{
 
             switch (choix) {
                 case 1:
-                    System.out.println("Entrez le nouveau titre : ");   String newTitle = scanner.nextLine();
+                    System.out.println("Entrez le nouveau titre : ");       String newTitle = scanner.nextLine();
                     livre.setTitle(newTitle);
                     modifierBD(livre);
                     break;
                 case 2:
-                    System.out.println("Entrez le nouvel auteur : ");   String newAuthor = scanner.nextLine();
+                    System.out.println("Entrez le nouvel auteur : ");       String newAuthor = scanner.nextLine();
                     livre.setAuteur(newAuthor);
                     System.out.println("Livre après la modification :");
                     afficherUnLivre(livre);
                     modifierBD(livre);
                     break;
                 case 3:
-                    System.out.println("Entrez le nouveau titre : ");   newTitle = scanner.nextLine();
-                    System.out.println("Entrez le nouvel auteur : ");   String newAuthor2 = scanner.nextLine();
+                    System.out.println("Entrez le nouveau titre : ");       newTitle = scanner.nextLine();
+                    System.out.println("Entrez le nouvel auteur : ");       String newAuthor2 = scanner.nextLine();
                     livre.setTitle(newTitle);
                     livre.setAuteur(newAuthor2);
                     modifierBD(livre);
                     break;
                 case 4:
-                    System.out.println("Entrez la nouvelle quantité : ");
-                    int newQuantity = scanner.nextInt();
+                    System.out.println("Entrez la nouvelle quantité : ");   int newQuantity = scanner.nextInt();
                     livre.setQuantite(newQuantity);
                     modifierBD(livre);
                     break;
@@ -195,6 +194,29 @@ public class Bibliothecaire{
         afficherUnLivre(livre);
 
         return livre;
+    }
+
+    private void modifierBD(Livre livre) {
+        PreparedStatement ps;
+        String query = "UPDATE livres SET title = ?, auteur = ?, quantite = ? WHERE isbn = ?";
+        try {
+            ps = ConnectionDB.getConnection().prepareStatement(query);
+            ps.setString(1, livre.getTitle());
+            ps.setString(2, livre.getAuteur());
+            ps.setInt(3, livre.getQuantite());
+            ps.setString(4, livre.getIsbn());
+
+            int nbRows = ps.executeUpdate();
+
+            if (nbRows > 0) {
+                System.out.println("Livre mis à jour dans la BD.");
+            } else {
+                System.out.println("Aucun livre mis à jour dans la BD.");
+            }
+        } catch (SQLException e) {
+            System.out.println("Erreur lors de la mise à jour du livre dans la base de données !");
+            e.printStackTrace();
+        }
     }
 
     public Livre recupererLivreIsbn(String isbnRecherche){
@@ -235,27 +257,47 @@ public class Bibliothecaire{
         System.out.printf("%-15s | %-30s | %-30s | %-6d%n", livre.getIsbn(), livre.getTitle(), livre.getAuteur(), livre.getQuantite());
     }
 
-    private void modifierBD(Livre livre) {
-        PreparedStatement ps;
-        String query = "UPDATE livres SET title = ?, auteur = ?, quantite = ? WHERE isbn = ?";
-        try {
-            ps = ConnectionDB.getConnection().prepareStatement(query);
-            ps.setString(1, livre.getTitle());
-            ps.setString(2, livre.getAuteur());
-            ps.setInt(3, livre.getQuantite());
-            ps.setString(4, livre.getIsbn());
+    public void emprunterLivre(String isbn, int nMembre, String nomEmprunteur){
+        PreparedStatement ps, psInsert, psUpdate, psInsertEmp;
+        ResultSet rs;
+        String querySelect = "SELECT * FROM livres WHERE isbn = ? AND quantite > 0";
 
-            int nbRows = ps.executeUpdate();
+        try{
+            ps = ConnectionDB.getConnection().prepareStatement(querySelect);
+            ps.setString(1, isbn);
+            rs = ps.executeQuery();
 
-            if (nbRows > 0) {
-                System.out.println("Livre mis à jour dans la BD.");
-            } else {
-                System.out.println("Aucun livre mis à jour dans la BD.");
+            if (rs.next()){ //le livre est disponible
+            //inserer les infos de l'emprunteur
+                String queryInsEmp = "INSERT INTO emprunteurs (numero_membre, name) VALUES(?, ?)";
+                psInsertEmp        = ConnectionDB.getConnection().prepareStatement(queryInsEmp);
+                psInsertEmp.setInt(1, nMembre);
+                psInsertEmp.setString(2, nomEmprunteur);
+
+
+            //inserer les infos d'emprunt
+                String queryInsert = "INSERT INTO emprunts (id_emprunteur, isbn_livre, status) VALUES (?, ?, 'emprunte')";
+                psInsert           = ConnectionDB.getConnection().prepareStatement(queryInsert);
+                psInsert.setInt(1, nMembre);
+                psInsert.setString(2, isbn);
+
+
+            //modifier la quantité des livres
+                String queryUpdate = "UPDATE livres SET quantite = (quantite-1) WHERE isbn = ?";
+                psUpdate           = ConnectionDB.getConnection().prepareStatement(queryUpdate);
+                psUpdate.setString(1, isbn);
+
+                psInsertEmp.executeUpdate();
+                psInsert.executeUpdate();
+                psUpdate.executeUpdate();
+
+                System.out.println("Livre emprunté avec succès !");
             }
-        } catch (SQLException e) {
-            System.out.println("Erreur lors de la mise à jour du livre dans la base de données !");
-            e.printStackTrace();
         }
+        catch (Exception e){
+            System.out.println("Erreur dans la methode d'emprunter "+e);
+        }
+
     }
 
 }
