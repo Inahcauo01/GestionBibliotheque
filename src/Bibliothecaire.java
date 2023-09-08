@@ -1,4 +1,5 @@
 import java.sql.*;
+import java.time.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -276,10 +277,12 @@ public class Bibliothecaire{
 
 
             //inserer les infos d'emprunt
-                String queryInsert = "INSERT INTO emprunts (id_emprunteur, isbn_livre, status) VALUES (?, ?, 'emprunte')";
+                LocalDate datePrevue = LocalDate.now().plusDays(7);
+                String queryInsert = "INSERT INTO emprunts (id_emprunteur, isbn_livre, status, date_retour_prevue) VALUES (?, ?, 'emprunte', ?)";
                 psInsert           = ConnectionDB.getConnection().prepareStatement(queryInsert);
                 psInsert.setInt(1, nMembre);
                 psInsert.setString(2, isbn);
+                psInsert.setDate(3, Date.valueOf(datePrevue));
 
 
             //modifier la quantité des livres
