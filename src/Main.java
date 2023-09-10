@@ -116,7 +116,25 @@ public class Main {
 
             // ########## Retourner un livre ##########
             case 5:
-                
+                Scanner scnr = new Scanner(System.in);
+                String isbnRetour;
+                do {
+                    System.out.print("Entrez l'ISBN du livre que vous souhaitez retourner : ");
+                    isbnRetour = scnr.nextLine();
+                }while (bibliothecaire.recupererLivreIsbn(isbnRetour) == null);
+
+                System.out.print("Entrez le numéro de membre de l'emprunteur : ");
+                int numero = scnr.nextInt();
+
+                if (bibliothecaire.emprunteurExiste(numero)) {
+                    bibliothecaire.retournerLivre(isbnRetour, numero);
+                } else {
+                    System.out.println("L'emprunteur n'existe pas dans la base de données.");
+                }
+
+                if (retourMenu()) {
+                    return true; // Quitter le programme
+                }
                 break;
 
             // ########## Supprimer un livre ##########
