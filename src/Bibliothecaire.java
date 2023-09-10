@@ -41,7 +41,11 @@ public class Bibliothecaire{
 
         PreparedStatement ps;
         ResultSet rs;
-        String query = "SELECT * FROM livres";
+        String query = "SELECT l.*, COUNT(e.isbn_livre) as empruntes " +
+                "FROM livres l " +
+                "LEFT JOIN emprunts e ON l.isbn = e.isbn_livre " +
+                "GROUP BY l.isbn";
+
         try {
             ps = ConnectionDB.getConnection().prepareStatement(query);
             rs = ps.executeQuery();
@@ -51,8 +55,9 @@ public class Bibliothecaire{
                 String title  = rs.getString("title");
                 String auteur = rs.getString("auteur");
                 int quantite  = rs.getInt("quantite");
+                int empruntes = rs.getInt("empruntes");
 
-                Livre livre = new Livre(isbn, title, auteur, quantite);
+                Livre livre = new Livre(isbn, title, auteur, quantite, empruntes);
                 livres.add(livre);
             }
         }catch (Exception e){
@@ -112,7 +117,12 @@ public class Bibliothecaire{
         List<Livre> livres = new ArrayList<>();
         PreparedStatement ps;
         ResultSet rs;
-        String query = "SELECT * FROM livres WHERE title LIKE ? OR auteur LIKE ?";
+        String query = "SELECT l.*, COUNT(e.isbn_livre) as empruntes " +
+                "FROM livres l " +
+                "LEFT JOIN emprunts e ON l.isbn = e.isbn_livre " +
+                "WHERE l.title LIKE ? OR l.auteur LIKE ?" +
+                "GROUP BY l.isbn";
+        //String query = "SELECT * FROM livres WHERE title LIKE ? OR auteur LIKE ?";
 
         try {
             ps = ConnectionDB.getConnection().prepareStatement(query);
@@ -126,8 +136,9 @@ public class Bibliothecaire{
                 String title  = rs.getString("title");
                 String auteur = rs.getString("auteur");
                 int quantite  = rs.getInt("quantite");
+                int empruntes = rs.getInt("empruntes");
 
-                Livre l = new Livre(isbn, title, auteur, quantite);
+                Livre l = new Livre(isbn, title, auteur, quantite, empruntes);
                 livres.add(l);
             }
 
@@ -230,7 +241,13 @@ public class Bibliothecaire{
         Livre livre = null;
         PreparedStatement ps;
         ResultSet rs;
-        String query = "SELECT * FROM livres WHERE isbn = ?";
+        String query = "SELECT l.*, COUNT(e.isbn_livre) as empruntes " +
+                "FROM livres l " +
+                "LEFT JOIN emprunts e ON l.isbn = e.isbn_livre " +
+                "WHERE l.isbn = ?" +
+                "GROUP BY l.isbn";
+
+        //String query = "SELECT * FROM livres WHERE isbn = ?";
 
         try {
             ps = ConnectionDB.getConnection().prepareStatement(query);
@@ -243,8 +260,9 @@ public class Bibliothecaire{
                 String title  = rs.getString("title");
                 String auteur = rs.getString("auteur");
                 int quantite  = rs.getInt("quantite");
+                int empruntes = rs.getInt("empruntes");
 
-                livre = new Livre(isbn, title, auteur, quantite);
+                livre = new Livre(isbn, title, auteur, quantite, empruntes);
             }
 
         } catch (SQLException e) {
@@ -277,7 +295,7 @@ public class Bibliothecaire{
             if (rs.next()){ //le livre est disponible
 
                 //verifier si l'utilisateur a deja emprunté le meme livre
-                String query = "SELECT * FROM emprunts WHERE isbn_livre = ? AND id_emprunteur = ? AND status = 'emprunte' AND date_retour_prevue > CURRENT_DATE";
+                String query = "SELECT * FROM emprunts WHERE isbn_livre = ? AND id_emprunteur = ? AND status = 'emprunte' AND date_retour_reelle < CURRENT_DATE";
                 psMmLivre    = ConnectionDB.getConnection().prepareStatement(query);
                 psMmLivre.setString(1, isbn);
                 psMmLivre.setInt(2, nMembre);
@@ -338,7 +356,7 @@ public class Bibliothecaire{
 
             if (rs.next()){
                 // update quantité (+1)
-                String queryUpdate = "UPDATE livres SET quantite = quantite+1 WHERE isbn = ?";
+                String queryUpdate = "UPDATE livres SET quantite = quantite+1 AND status = 'retourne' AND date_retour_reelle = CURRENT_DATE WHERE isbn = ?";
                 ps1                = ConnectionDB.getConnection().prepareStatement(queryUpdate);
                 ps1.setString(1, isbn);
                 ps1.executeUpdate();
@@ -363,10 +381,10 @@ public class Bibliothecaire{
             ps.setInt(1, numeroMembre);
             rs = ps.executeQuery();
 
-            return rs.next(); // Si rs.next() est vrai, l'emprunteur existe, sinon il n'existe pas
+            return rs.next();
         } catch (SQLException e) {
             System.err.println("Erreur lors de la vérification de l'emprunteur : " + e.getMessage());
-            return false; // En cas d'erreur, considérez que l'emprunteur n'existe pas
+            return false;
         }
     }
 

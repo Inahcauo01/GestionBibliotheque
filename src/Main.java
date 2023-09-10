@@ -55,18 +55,20 @@ public class Main {
                 System.out.println("Entrez l'auteur du livre : ");          String auteur = scanner.nextLine();
                 System.out.println("Entrez la quantité du livre : ");       int quantite  = scanner.nextInt();
 
-                Livre livre = new Livre(isbn, titre, auteur, quantite);
+                Livre livre = new Livre(isbn, titre, auteur, quantite, 0);
                 bibliothecaire.ajouterLivre(livre);
                 break;
 
             // ########## Afficher les livres ##########
             case 2:
                 List<Livre> livres = bibliothecaire.afficherLivres();
-                System.out.printf("\t%-15s | %-30s | %-30s | %-6s%n", "ISBN", "Titre", "Auteur", "Quantité");
+
+                System.out.printf("\t%-15s | %-30s | %-30s | %-6s | %-10s | %-6s%n", "ISBN", "Titre", "Auteur", "Disponibles", "Empruntés", " Quantité totale");
                 System.out.println("\t----------------------------------------------------------------------------------------------------");
                 for (Livre lv : livres) {
-                    System.out.printf("\t%-15s | %-30s | %-30s | %-6d%n", lv.getIsbn(), lv.getTitle(), lv.getAuteur(), lv.getQuantite());
+                    System.out.printf("\t%-15s | %-30s | %-30s | %-6d | %-10d | %-6d%n", lv.getIsbn(), lv.getTitle(), lv.getAuteur(), lv.getQuantite(), lv.getEmprunte(), lv.getQuantite() + lv.getEmprunte());
                 }
+
                 if (retourMenu()) {
                     return true; // Quitter le programme
                 }
@@ -84,6 +86,7 @@ public class Main {
                     System.out.println("\tTitre   : " + lr.getTitle());
                     System.out.println("\tAuteur  : " + lr.getAuteur());
                     System.out.println("\tQuantité: " + lr.getQuantite());
+                    System.out.println("\tNb Emprunté: " + lr.getEmprunte());
                     System.out.println("________________________________");
                 }
                 if (retourMenu()) {

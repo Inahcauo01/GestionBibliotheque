@@ -4,21 +4,14 @@ public class Livre {
     private String title;
     private String auteur;
     private int quantite;
+    private int emprunte;
 
-    public Livre(String isbn, String title, String auteur, int quantite) {
-        //this.id = id;
+    public Livre(String isbn, String title, String auteur, int quantite, int emprunte) {
         this.isbn = isbn;
         this.title = title;
         this.auteur = auteur;
         this.quantite = quantite;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
+        this.emprunte = emprunte;
     }
 
     public String getIsbn() {
@@ -52,4 +45,7 @@ public class Livre {
     public void setQuantite(int quantite) {
         this.quantite = quantite;
     }
+
+    public int getEmprunte() { return emprunte; }
+
 }
