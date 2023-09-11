@@ -195,6 +195,11 @@ public class Main {
 
             // ########## Générer un rapport ##########
             case 9:
+                rapport.genererRapport();
+
+                if (retourMenu()) {
+                    return true; // Quitter le programme
+                }
                 break;
 
             // ############### Quitter #################

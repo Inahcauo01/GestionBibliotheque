@@ -1,5 +1,10 @@
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Rapport {
@@ -27,6 +32,35 @@ public class Rapport {
             e.printStackTrace();
         }
         return statistiques;
+    }
+
+
+    public void genererRapport() {
+        Bibliothecaire bibliothecaire = new Bibliothecaire();
+        List<Livre> livres = bibliothecaire.afficherLivres();
+
+        try {
+            String desktopPath = System.getProperty("user.home") + "/Desktop";
+
+            BufferedWriter writer = new BufferedWriter(new FileWriter(desktopPath+"/rapport_bibliotheque.txt"));
+
+            LocalDate date = LocalDate.now();
+
+            writer.write("Date : "+date+"\n");
+            writer.write("\n## LISTE DES LIVRES :\n---------------------\n");
+            writer.write(String.format("%-15s | %-30s | %-30s | %-12s | %-12s | %-15s%n", "ISBN", "Titre", "Auteur", "Disponibles", "Empruntés", "Quantité totale"));
+            writer.write("------------------------------------------------------------------------------------------------------------------------------------\n");
+
+            for (Livre lv : livres) {
+                writer.write(String.format("%-15s | %-30s | %-30s | %-12d | %-12d | %-15d%n", lv.getIsbn(), lv.getTitle(), lv.getAuteur(), lv.getQuantite(), lv.getEmprunte(), lv.getQuantite() + lv.getEmprunte()));
+                writer.flush(); // Vide le tampon et force l'écriture dans le fichier
+            }
+
+            System.out.println("Rapport généré avec succès.");
+        }
+        catch (IOException e) {
+            System.err.println("Erreur lors de la création du rapport : " + e.getMessage());
+        }
     }
 
 
