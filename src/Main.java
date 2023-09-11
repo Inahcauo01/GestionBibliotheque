@@ -1,4 +1,6 @@
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 public class Main {
@@ -31,8 +33,9 @@ public class Main {
         System.out.println("\t5. Retourner un livre");
         System.out.println("\t6. Supprimer un livre");
         System.out.println("\t7. Modifier un livre");
-        System.out.println("\t8. Génér un rapport");
-        System.out.println("\t9. Quiter");
+        System.out.println("\t8. Modifier un livre");
+        System.out.println("\t9. Génér un rapport");
+        System.out.println("\t0. Quiter");
         // Ajoutez d'autres options de menu selon vos besoins
 
         Scanner sc = new Scanner(System.in);
@@ -40,6 +43,8 @@ public class Main {
         int choice = sc.nextInt();
 
         Bibliothecaire bibliothecaire = new Bibliothecaire();
+        Rapport rapport = new Rapport();
+
         // Traitez les choix de menu ici en utilisant des instructions conditionnelles
         switch (choice) {
             // ########## Ajouter un livre ##########
@@ -171,12 +176,28 @@ public class Main {
                 bibliothecaire.modifierLivre(isbnModif);
                 break;
 
-            // ########## Générer un rapport ##########
+            // ########## Voir les statistiques ##########
             case 8:
+                Map<String, Integer> statistiques = rapport.statistiquesLivres();
+
+                System.out.println("Statistiques des livres :");
+                System.out.println("Total de livres : " + statistiques.get("Total de livres"));
+                System.out.println("Livres disponibles : " + statistiques.get("Livres disponibles"));
+                System.out.println("Livres empruntés : " + statistiques.get("Livres empruntés"));
+                System.out.println("Livres perdus : " + statistiques.get("Livres perdus"));
+
+                if (retourMenu()) {
+                    return true; // Quitter le programme
+                }
+                break;
+
+
+            // ########## Générer un rapport ##########
+            case 9:
                 break;
 
             // ############### Quitter #################
-            case 9:
+            case 0:
                 System.out.println("Deconnection ...");
                 return true;
             default:
