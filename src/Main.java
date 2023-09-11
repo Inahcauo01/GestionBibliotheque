@@ -33,7 +33,7 @@ public class Main {
         System.out.println("\t5. Retourner un livre");
         System.out.println("\t6. Supprimer un livre");
         System.out.println("\t7. Modifier un livre");
-        System.out.println("\t8. Modifier un livre");
+        System.out.println("\t8. Voir les statistiques");
         System.out.println("\t9. Génér un rapport");
         System.out.println("\t0. Quiter");
         // Ajoutez d'autres options de menu selon vos besoins
@@ -68,10 +68,10 @@ public class Main {
             case 2:
                 List<Livre> livres = bibliothecaire.afficherLivres();
 
-                System.out.printf("\t%-15s | %-30s | %-30s | %-6s | %-10s | %-6s%n", "ISBN", "Titre", "Auteur", "Disponibles", "Empruntés", " Quantité totale");
-                System.out.println("\t----------------------------------------------------------------------------------------------------");
+                System.out.printf("\t%-15s | %-30s | %-30s | %-12s | %-12s | %-15s%n", "ISBN", "Titre", "Auteur", "Disponibles", "Empruntés", " Quantité totale");
+                System.out.println("\t------------------------------------------------------------------------------------------------------------------------------------");
                 for (Livre lv : livres) {
-                    System.out.printf("\t%-15s | %-30s | %-30s | %-6d | %-10d | %-6d%n", lv.getIsbn(), lv.getTitle(), lv.getAuteur(), lv.getQuantite(), lv.getEmprunte(), lv.getQuantite() + lv.getEmprunte());
+                    System.out.printf("\t%-15s | %-30s | %-30s | %-12d | %-12d | %-15d%n", lv.getIsbn(), lv.getTitle(), lv.getAuteur(), lv.getQuantite(), lv.getEmprunte(), lv.getQuantite() + lv.getEmprunte());
                 }
 
                 if (retourMenu()) {
@@ -181,10 +181,11 @@ public class Main {
                 Map<String, Integer> statistiques = rapport.statistiquesLivres();
 
                 System.out.println("Statistiques des livres :");
-                System.out.println("Total de livres : " + statistiques.get("Total de livres"));
-                System.out.println("Livres disponibles : " + statistiques.get("Livres disponibles"));
-                System.out.println("Livres empruntés : " + statistiques.get("Livres empruntés"));
-                System.out.println("Livres perdus : " + statistiques.get("Livres perdus"));
+                System.out.println("\t-------------------------------------------------------------------------------------");
+                System.out.printf("\t| %-20s | %-20s | %-20s | %-20s \n","Total de livres","Livres disponibles","Livres empruntés","Livres perdus");
+                System.out.println("\t-------------------------------------------------------------------------------------");
+                System.out.printf("\t| %-20d | %-20d | %-20d | %-20d \n",statistiques.get("Total de livres"), statistiques.get("Livres disponibles"), statistiques.get("Livres empruntés"), statistiques.get("Livres perdus"));
+                System.out.println("\t_____________________________________________________________________________________");
 
                 if (retourMenu()) {
                     return true; // Quitter le programme
