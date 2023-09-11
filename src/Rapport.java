@@ -26,7 +26,6 @@ public class Rapport {
             System.out.println("Erreur lors de la récupération des statistiques des livres !");
             e.printStackTrace();
         }
-
         return statistiques;
     }
 
