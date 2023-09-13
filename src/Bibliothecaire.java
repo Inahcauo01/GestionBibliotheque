@@ -1,8 +1,7 @@
 import java.sql.*;
+import java.sql.Date;
 import java.time.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class Bibliothecaire{
 
@@ -273,10 +272,10 @@ public class Bibliothecaire{
     }
 
     public void afficherUnLivre(Livre livre) {
-        System.out.println("ISBN : " + livre.getIsbn());
-        System.out.println("Titre : " + livre.getTitle());
-        System.out.println("Auteur : " + livre.getAuteur());
-        System.out.println("Quantité : " + livre.getQuantite());
+//        System.out.println("ISBN : " + livre.getIsbn());
+//        System.out.println("Titre : " + livre.getTitle());
+//        System.out.println("Auteur : " + livre.getAuteur());
+//        System.out.println("Quantité : " + livre.getQuantite());
         System.out.printf("%-15s | %-30s | %-30s | %-6s%n", "ISBN", "Titre", "Auteur", "Quantité");
         System.out.println("----------------------------------------------------------------------------------------------------------------------");
         System.out.printf("%-15s | %-30s | %-30s | %-6d%n", livre.getIsbn(), livre.getTitle(), livre.getAuteur(), livre.getQuantite());
@@ -341,7 +340,6 @@ public class Bibliothecaire{
         }
     }
 
-
     public void retournerLivre(String isbn, int nMembre){
         PreparedStatement ps, ps1;
         ResultSet rs;
@@ -387,5 +385,36 @@ public class Bibliothecaire{
             return false;
         }
     }
+
+    public List<Map<String, Object>> AfficherEmpunteurs() {
+        List<Map<String, Object>> emprunteursList = new ArrayList<>();
+        PreparedStatement ps;
+        ResultSet rs;
+        String query = "SELECT numero_membre, name, title, isbn, date_emprunt, date_retour_prevue " +
+                "FROM emprunts e " +
+                "JOIN emprunteurs emp ON e.id_emprunteur=emp.numero_membre " +
+                "JOIN livres l ON l.isbn=e.isbn_livre " +
+                "ORDER BY e.date_emprunt DESC";
+
+        try {
+            ps = ConnectionDB.getConnection().prepareStatement(query);
+            rs = ps.executeQuery();
+
+            int nbColonne = rs.getMetaData().getColumnCount();
+            while (rs.next()) {
+                Map<String, Object> emprunteurs = new HashMap<>();
+                for (int i = 1; i <= nbColonne; i++) {
+                    String nomColonne = rs.getMetaData().getColumnName(i);
+                    Object valueColonne = rs.getObject(i);
+                    emprunteurs.put(nomColonne, valueColonne);
+                }
+                emprunteursList.add(emprunteurs); // Add the map to the list
+            }
+        } catch (Exception e) {
+            System.err.println("Erreur est survenue lors de l'affichage des emprunteurs :" + e.getMessage());
+        }
+        return emprunteursList;
+    }
+
 
 }

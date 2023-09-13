@@ -1,7 +1,4 @@
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
 
 public class Main {
     public static void main(String[] args) {
@@ -35,6 +32,7 @@ public class Main {
         System.out.println("\t7. Modifier un livre");
         System.out.println("\t8. Voir les statistiques");
         System.out.println("\t9. Génér un rapport");
+        System.out.println("\t10. Liste des emprunteurs");
         System.out.println("\t0. Quiter");
         // Ajoutez d'autres options de menu selon vos besoins
 
@@ -87,10 +85,10 @@ public class Main {
                 List<Livre> livres_recherches = bibliothecaire.rechercherLivre(mot);
                 System.out.println("______________________________________");
                 for (Livre lr: livres_recherches){
-                    System.out.println("\tISBN    : " + lr.getIsbn());
-                    System.out.println("\tTitre   : " + lr.getTitle());
-                    System.out.println("\tAuteur  : " + lr.getAuteur());
-                    System.out.println("\tQuantité: " + lr.getQuantite());
+                    System.out.println("\tISBN       : " + lr.getIsbn());
+                    System.out.println("\tTitre      : " + lr.getTitle());
+                    System.out.println("\tAuteur     : " + lr.getAuteur());
+                    System.out.println("\tQuantité   : " + lr.getQuantite());
                     System.out.println("\tNb Emprunté: " + lr.getEmprunte());
                     System.out.println("________________________________");
                 }
@@ -145,24 +143,45 @@ public class Main {
                 }
                 break;
 
+
             // ########## Supprimer un livre ##########
             case 6:
-                while (true) {
+                boolean continueDeleting = true;
+                while (continueDeleting) {
                     Scanner scan = new Scanner(System.in);
                     String isbnToDelete;
                     do {
                         System.out.print("Entrez l'ISBN du livre que vous souhaitez supprimer : ");
                         isbnToDelete = scan.nextLine();
-                    }while (bibliothecaire.recupererLivreIsbn(isbnToDelete) == null);
+
+                        if (bibliothecaire.recupererLivreIsbn(isbnToDelete) == null) {
+                            System.out.println("ISBN incorrect !");
+                            System.out.println("1. Réessayer");
+                            System.out.println("2. Retourner au menu");
+
+                            int choix = scan.nextInt();
+                            scan.nextLine();
+
+                            if (choix == 2) {
+                                continueDeleting = false;
+                                break;
+                            }
+                        }
+                    } while (bibliothecaire.recupererLivreIsbn(isbnToDelete) == null);
+
+                    if (!continueDeleting) {
+                        break;
+                    }
 
                     bibliothecaire.suppLivre(isbnToDelete);
                     System.out.print("Voulez-vous supprimer un autre livre ? (O/N): ");
                     String userInput = scan.nextLine();
                     if (!"O".equalsIgnoreCase(userInput)) {
-                        break;
+                        continueDeleting = false;
                     }
                 }
                 break;
+
 
             // ########## Modifier un livre ##########
             case 7:
@@ -181,11 +200,11 @@ public class Main {
                 Map<String, Integer> statistiques = rapport.statistiquesLivres();
 
                 System.out.println("Statistiques des livres :");
-                System.out.println("\t-------------------------------------------------------------------------------------");
-                System.out.printf("\t| %-20s | %-20s | %-20s | %-20s \n","Total de livres","Livres disponibles","Livres empruntés","Livres perdus");
-                System.out.println("\t-------------------------------------------------------------------------------------");
-                System.out.printf("\t| %-20d | %-20d | %-20d | %-20d \n",statistiques.get("Total de livres"), statistiques.get("Livres disponibles"), statistiques.get("Livres empruntés"), statistiques.get("Livres perdus"));
-                System.out.println("\t_____________________________________________________________________________________");
+                System.out.println("\t----------------------------------------------------------------------------------------------------------------------------");
+                System.out.printf("\t| %-20s | %-20s | %-20s | %-20s | %-20s \n","Total de livres","Livres disponibles","Livres empruntés","Livres perdus","Livres retournés en retard");
+                System.out.println("\t----------------------------------------------------------------------------------------------------------------------------");
+                System.out.printf("\t| %-20d | %-20d | %-20d | %-20d | %-20d \n",statistiques.get("Total de livres"), statistiques.get("Livres disponibles"), statistiques.get("Livres empruntés"), statistiques.get("Livres perdus"), statistiques.get("Livres retournés en retard"));
+                System.out.println("\t____________________________________________________________________________________________________________________________");
 
                 if (retourMenu()) {
                     return true; // Quitter le programme
@@ -197,10 +216,38 @@ public class Main {
             case 9:
                 rapport.genererRapport();
 
-                if (retourMenu()) {
-                    return true; // Quitter le programme
-                }
+                if (retourMenu())
+                    return true;
                 break;
+
+
+            // ########## Liste des emprunteurs ##########
+            case 10:
+                List<Map<String, Object>> emprunteursList = bibliothecaire.AfficherEmpunteurs();
+
+                System.out.println("\n## LISTE DES EMPRUNTEURS :\n-------------------------");
+                System.out.printf("%-15s | %-15s | %-30s | %-15s | %-22s | %-15s%n",
+                        "Numéro Membre", "Nom", "Titre", "ISBN", "Date Emprunt", "Date Retour Prévue");
+                System.out.println("----------------------------------------------------------------------------------------------------------------------------------");
+
+                for (Map<String, Object> emprunteurs : emprunteursList) {
+                    String numMembre = emprunteurs.get("numero_membre").toString();
+                    String name = emprunteurs.get("name").toString();
+                    String title = emprunteurs.get("title").toString();
+                    String isbnlivre = emprunteurs.get("isbn").toString();
+                    String dateEmprunt = emprunteurs.get("date_emprunt").toString();
+                    String dateRetourPrevue = emprunteurs.get("date_retour_prevue").toString();
+
+                    System.out.printf("%-15s | %-15s | %-30s | %-15s | %-22s | %-15s%n",
+                            numMembre, name, title, isbnlivre, dateEmprunt, dateRetourPrevue);
+                }
+
+                System.out.println("----------------------------------------------------------------------------------------------------------------------------------");
+
+                if (retourMenu())
+                    return true;
+                break;
+
 
             // ############### Quitter #################
             case 0:

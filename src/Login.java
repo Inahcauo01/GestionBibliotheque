@@ -37,7 +37,7 @@ public class Login {
                     }
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                System.err.println("Une erreur est survenue lors de la connection : "+e.getMessage());
             }
         }while (true);
         return authentified;
