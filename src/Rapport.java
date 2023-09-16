@@ -70,9 +70,9 @@ public class Rapport {
 
             fichier.write("\n\n## LISTE DES EMPRUNTEURS :\n-------------------------");
 
-            fichier.write(String.format("\n%-15s | %-15s | %-30s | %-15s | %-20s | %-15s%n",
+            fichier.write(String.format("\n%-15s | %-15s | %-30s | %-15s | %-22s | %-15s%n",
                     "Numéro Membre", "Nom", "Titre", "ISBN", "Date Emprunt", "Date Retour Prévue"));
-            fichier.write("---------------------------------------------------------------------------------------------------------------------------------");
+            fichier.write("---------------------------------------------------------------------------------------------------------------------------------\n");
 
             for (Map<String, Object> emprunteur : emprunteursList) {
                 String numMembre    = emprunteur.get("numero_membre").toString();
@@ -82,9 +82,9 @@ public class Rapport {
                 String dateEmprunt  = emprunteur.get("date_emprunt").toString();
                 String dateRetourPrevue = emprunteur.get("date_retour_prevue").toString();
 
-                fichier.write(String.format("\n%-15s | %-15s | %-30s | %-15s | %-20s | %-15s%n", numMembre, name, title, isbnlivr, dateEmprunt, dateRetourPrevue));
+                fichier.write(String.format("%-15s | %-15s | %-30s | %-15s | %-22s | %-15s%n", numMembre, name, title, isbnlivr, dateEmprunt, dateRetourPrevue));
             }
-            fichier.write("\n---------------------------------------------------------------------------------------------------------------------------------");
+            fichier.write("---------------------------------------------------------------------------------------------------------------------------------\n");
             fichier.flush(); // Vide le tampon et force l'écriture dans le fichier
 
             System.out.println("Rapport généré avec succès.");

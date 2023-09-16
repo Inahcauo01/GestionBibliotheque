@@ -51,12 +51,21 @@ public class Main {
                 System.out.println("__________________________________________");
                 System.out.println("############ Ajouter un Livre ############");
                 System.out.println("------------------------------------------");
-                //System.out.println("Entrez l'ID du livre : ");              int id = scanner.nextInt();
-                //scanner.nextLine();
-                System.out.println("Entrez l'ISBN du livre : ");            String isbn   = scanner.nextLine();
+
+                System.out.println("Entrez l'ISBN du livre : ");            String isbn = scanner.nextLine();
+
+                Livre existingLivre = bibliothecaire.recupererLivreIsbn(isbn);
+                if (existingLivre != null) {
+                    System.out.println("Le livre avec l'ISBN existe déjà !");
+                    break;
+                }
+
                 System.out.println("Entrez le titre du livre : ");          String titre  = scanner.nextLine();
                 System.out.println("Entrez l'auteur du livre : ");          String auteur = scanner.nextLine();
-                System.out.println("Entrez la quantité du livre : ");       int quantite  = scanner.nextInt();
+                int quantite;
+                do {
+                    System.out.println("Entrez la quantité du livre : ");   quantite  = scanner.nextInt();
+                }while(quantite <= 0);
 
                 Livre livre = new Livre(isbn, titre, auteur, quantite, 0);
                 bibliothecaire.ajouterLivre(livre);
